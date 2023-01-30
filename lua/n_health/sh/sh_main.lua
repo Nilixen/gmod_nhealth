@@ -1,0 +1,1 @@
+n_health.limbs = {"head","torso","leftarm","rightarm","leftleg","rightleg"}
