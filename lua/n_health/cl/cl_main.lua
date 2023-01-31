@@ -18,11 +18,10 @@ end )
 
 // networking for syncing
 net.Receive("n_health_networking",function()
-
     if not IsValid(LocalPlayer()) then return end
 
     local tbl = net.ReadTable()
     LocalPlayer().n_health = tbl
-
     LocalPlayer():SetHealth(tbl.health or LocalPlayer():Health())
+
 end)

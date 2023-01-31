@@ -11,17 +11,29 @@ hook.Add("PlayerInitialSpawn","n_health_initial",function(ply)
 end)
 
 // function to update client and give him the required information
-function n_health:UpdateClient(ply,type)
+function n_health:UpdateClient(ply,type,...)
+    local args = {...}
     // copying over the table cuz we dont want the health to be there
     local tbl = table.Copy(ply.n_health)
     if type == "health" then
         tbl.health = ply:Health()
+    end
+    if type == "damage" then
+        tbl.damage = args[1] or 0
     end
     net.Start("n_health_networking")
         net.WriteTable(tbl)
     net.Send(ply)
 
 end
+
+// realistic fall damage, can be disabled in config
+hook.Add( "GetFallDamage", "n_health_realisticfalldamage", function( ply, speed )
+    if n_health.config.realisticfalldamage then
+        return ( speed / 8 )
+    end
+end )
+
 
 // executed when client joins and loads...
 net.Receive("n_health_networking", function(len,ply)
@@ -57,6 +69,16 @@ function n_health:HandleDamage(target,dmg,hitgroup)
     // just to be sure that we're dealing with player or npc (bot)
     if not target:IsPlayer() or target:IsNPC() then return end
 
+    // scaling damage with respect to config file
+    for k,v in pairs(n_health.config.damageTypeScale) do
+        if bit.band(dmg:GetDamageType(),k) then
+            local damage = dmg:GetDamage()
+            dmg:ScaleDamage(v)
+            //print("scaled damage of type "..k.. " by a value of "..v.." (from "..damage.." to "..dmg:GetDamage()..")")
+        end
+    end
+    
+
     // if hitgroup is passed then we know that we're dealing with ScalePlayerDamage, and that it's a bullet damage
     if hitgroup then
         // if the hitgroup is generic then we might be dealing with npc dmg eg. combine soldier
@@ -73,9 +95,15 @@ function n_health:HandleDamage(target,dmg,hitgroup)
         end
     else    
         // TODO: check if damagetypes are not the same, not wanna multiply the damage
-
-        print("other: "..dmg:GetDamageType())
-
+        
+        // check for fall damage
+        if dmg:IsDamageType(DMG_FALL) then
+            
+            target:Damage(dmg:GetDamage(),"rightleg")
+            target:Damage(dmg:GetDamage(),"leftleg")
+            
+        end
+        
     end
 
 end

@@ -78,7 +78,44 @@ function playerMeta:SetHealthMultiplier(multiplier, limb)
 end
 // Player:Damage(damage,type,limb)
 // this will damage selected limb
+function playerMeta:Damage(damage,limb)
+    if not damage then return false end
 
+    // if limb is passed with a function
+    if limb then 
+        local _limb = self.n_health[limb]
+        local dmg = _limb.health - damage
+        _limb.health = math.max(dmg,0)
+    
+        // if damage is more than a body part can withstand it will split the rest of the damage to the whole body
+        if dmg < 0 then
+            dmg = math.abs(dmg)
+            self:Damage(dmg)
+        end
+    // if limb is not passed split the damage to all viable body parts that have more than x health
+    else
+        // i know that some damage will be lost, but i have to do it this way or it will crash gmod XD
+        local avaibleLimbs = table.Copy(n_health.limbs) // copy the table to be able to work on it without messing every other thing up
+
+        // first for loop is for determining the avaible body parts that the damage can be split to
+        for k,v in pairs(avaibleLimbs) do
+            _limb = self.n_health[v]
+            if _limb.health <= 0 then
+                avaibleLimbs[k] = nil
+            end
+        end
+
+        local dmg = (damage)/table.Count(avaibleLimbs)  // split damage
+        for k,v in pairs(avaibleLimbs) do
+            local _limb = self.n_health[v]
+            _limb.health = math.max(0,(_limb.health - dmg))
+        end
+
+    end
+
+    n_health:UpdateClient(self,"damage",damage)
+
+end
 
 
 // Player:Health(detailed)
