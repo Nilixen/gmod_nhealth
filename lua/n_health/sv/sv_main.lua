@@ -35,26 +35,47 @@ end)
 
 
 // hook to detect bullet damage, forward to another function
-hook.Add("ScalePlayerDamage","n_health",function(ply, hitgroup, dmginfo)
+hook.Add("ScalePlayerDamage","n_health",function(ply, hitgroup, dmg)
     
-    print("bullet "..hitgroup)
+    n_health:HandleDamage(ply,dmg,hitgroup)
+
+    // return true to prevent from taking damage
     return true
 end)
 
 // hook to detect other damage
 hook.Add("EntityTakeDamage","n_health",function(target, dmg)
+    // have to check if it's a player or a npc, cuz' entitytakedamage will also trigger for every entity
     if not target:IsPlayer() or target:IsNPC() then return end
 
-    // may not be the cleanest but this is how it'll be
-        // TODO
-    print(dmg:GetDamageType())
-    local damageTypeBan = {""}
-    // not detecting bullet damage due to the fact that i dont know the hit groupt that's why I have another hook ^
-    if table.HasValue()  then return end
-
-    print("other")
+    n_health:HandleDamage(target,dmg)
+    // return true to prevent from taking damage
     return true
-
-    
-    
 end)
+
+function n_health:HandleDamage(target,dmg,hitgroup)
+    // just to be sure that we're dealing with player or npc (bot)
+    if not target:IsPlayer() or target:IsNPC() then return end
+
+    // if hitgroup is passed then we know that we're dealing with ScalePlayerDamage, and that it's a bullet damage
+    if hitgroup then
+        // if the hitgroup is generic then we might be dealing with npc dmg eg. combine soldier
+        if hitgroup == HITGROUP_GENERIC then
+            // if the attacker is a npc then randomize the hitpos
+            local attacker = dmg:GetAttacker()
+            if attacker:IsNPC() or attacker:IsNextBot() then
+                // TODO: ^
+            end
+        // hit head, get the weapon type - blunt, sharp, bullet(if bullet then get the damage that it inflicted,
+        // to calculate the possibilty of bleeding, fracture or concussion)
+        elseif hitgroup == HITGROUP_HEAD then
+            
+        end
+    else    
+        // TODO: check if damagetypes are not the same, not wanna multiply the damage
+
+        print("other: "..dmg:GetDamageType())
+
+    end
+
+end

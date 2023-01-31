@@ -76,6 +76,9 @@ function playerMeta:SetHealthMultiplier(multiplier, limb)
     n_health:UpdateClient(self,"multiplier")
 
 end
+// Player:Damage(damage,type,limb)
+// this will damage selected limb
+
 
 
 // Player:Health(detailed)
