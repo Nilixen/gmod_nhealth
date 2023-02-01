@@ -1,28 +1,41 @@
-local playerMeta = FindMetaTable("Player")
+local entityMeta = FindMetaTable("Entity")
 
-// Player:SetHealth() do not mix up with Entity:SetHealth(), this one is custom made
-function playerMeta:SetHealth(health,limb)
+
+local oldSetHealth = oldSetHealth or entityMeta.SetHealth
+function entityMeta:SetHealth(health,bool)
+    if not bool and self:IsPlayer() then
+        n_health:SetPlayerHealth(self,health)
+    end
+    oldSetHealth(self,health)
+end
+
+
+// n_health:SetHealth()
+function n_health:SetPlayerHealth(target,health,limb)
     // check if it is actually player(have to be) and if alive
-    if not self:IsPlayer() then return end
-    if not self:Alive() then return end
+    if not target:IsPlayer() then return end
+    if not target:Alive() then return end
     
     local limbs = n_health.limbs
     if IsValid(limb) then
         
         if table.HasValue(limbs,limb) then
-            local _limb = self.n_health[limb]
+            local _limb = target.n_health[limb]
             _limb.health = health * (_limb.multiplier or n_health.config.limbs.multipliers[limb])
         end
     else
         for k,v in pairs(limbs) do
-            local _limb = self.n_health[v]
+            local _limb = target.n_health[v]
             _limb.health = health * (_limb.multiplier or n_health.config.limbs.multipliers[v])
         end
     end
 
-    n_health:UpdateClient(self,"health")
+    n_health:UpdateClient(target,"health")
 
 end
+
+
+local playerMeta = FindMetaTable("Player")
 
 // Player:Heal(limb<"head","torso","leftarm","rightarm","leftleg","rightleg">)
 // this will only heal fractures, concussion and bleeding
@@ -113,6 +126,7 @@ function playerMeta:Damage(damage,limb)
 
     end
 
+    self:SetHealth(self:Health(),true)
     n_health:UpdateClient(self,"damage",damage)
 
 end

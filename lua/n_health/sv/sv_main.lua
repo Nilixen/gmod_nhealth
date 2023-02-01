@@ -15,12 +15,10 @@ function n_health:UpdateClient(ply,type,...)
     local args = {...}
     // copying over the table cuz we dont want the health to be there
     local tbl = table.Copy(ply.n_health)
-    if type == "health" then
-        tbl.health = ply:Health()
-    end
     if type == "damage" then
         tbl.damage = args[1] or 0
     end
+    tbl.health = ply:Health()
     net.Start("n_health_networking")
         net.WriteTable(tbl)
     net.Send(ply)
@@ -46,35 +44,26 @@ net.Receive("n_health_networking", function(len,ply)
 end)
 
 
-// hook to detect bullet damage, forward to another function
-hook.Add("ScalePlayerDamage","n_health",function(ply, hitgroup, dmg)
-    
-    n_health:HandleDamage(ply,dmg,hitgroup)
-
-    // return true to prevent from taking damage
-    return true
-end)
-
-// hook to detect other damage
+// hook to detect damage
 hook.Add("EntityTakeDamage","n_health",function(target, dmg)
     // have to check if it's a player or a npc, cuz' entitytakedamage will also trigger for every entity
-    if not target:IsPlayer() or target:IsNPC() then return end
+    if not target:IsPlayer() then return end
 
-    n_health:HandleDamage(target,dmg)
+    n_health:HandleDamage(target,dmg,target:LastHitGroup())
     // return true to prevent from taking damage
     return true
 end)
 
 function n_health:HandleDamage(target,dmg,hitgroup)
     // just to be sure that we're dealing with player or npc (bot)
-    if not target:IsPlayer() or target:IsNPC() then return end
+    if not target:IsPlayer() then return end
 
     // scaling damage with respect to config file
     for k,v in pairs(n_health.config.damageTypeScale) do
         if bit.band(dmg:GetDamageType(),k) then
             local damage = dmg:GetDamage()
             dmg:ScaleDamage(v)
-            //print("scaled damage of type "..k.. " by a value of "..v.." (from "..damage.." to "..dmg:GetDamage()..")")
+            print("scaled damage of type "..k.. " by a value of "..v.." (from "..damage.." to "..dmg:GetDamage()..")")
         end
     end
     
@@ -86,24 +75,18 @@ function n_health:HandleDamage(target,dmg,hitgroup)
             // if the attacker is a npc then randomize the hitpos
             local attacker = dmg:GetAttacker()
             if attacker:IsNPC() or attacker:IsNextBot() then
-                // TODO: ^
+                target:Damage(dmg:GetDamage())
+            end
+            // check for fall damage
+            if dmg:IsDamageType(DMG_FALL) then
+                target:Damage(dmg:GetDamage(),"rightleg")
+                target:Damage(dmg:GetDamage(),"leftleg")
             end
         // hit head, get the weapon type - blunt, sharp, bullet(if bullet then get the damage that it inflicted,
         // to calculate the possibilty of bleeding, fracture or concussion)
         elseif hitgroup == HITGROUP_HEAD then
             
         end
-    else    
-        // TODO: check if damagetypes are not the same, not wanna multiply the damage
-        
-        // check for fall damage
-        if dmg:IsDamageType(DMG_FALL) then
-            
-            target:Damage(dmg:GetDamage(),"rightleg")
-            target:Damage(dmg:GetDamage(),"leftleg")
-            
-        end
-        
     end
 
 end

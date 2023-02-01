@@ -6,6 +6,7 @@ for k,v in pairs(n_health.limbs) do
 end
 ]]--
 
+
 hook.Add( "InitPostEntity", "n_health_clientready", function()
 	net.Start( "n_health_networking" )
         net.WriteInt(1,4)
@@ -22,6 +23,6 @@ net.Receive("n_health_networking",function()
 
     local tbl = net.ReadTable()
     LocalPlayer().n_health = tbl
-    LocalPlayer():SetHealth(tbl.health or LocalPlayer():Health())
-
+    //LocalPlayer():SetHealth(tbl.health or LocalPlayer():Health())
+    print(tbl.health)
 end)
