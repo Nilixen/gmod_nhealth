@@ -11,19 +11,36 @@ hook.Add("PlayerInitialSpawn","n_health_initial",function(ply)
 end)
 
 // function to update client and give him the required information
+local buffer = {}
 function n_health:UpdateClient(ply,type,...)
     local args = {...}
-    // copying over the table cuz we dont want the health to be there
-    local tbl = table.Copy(ply.n_health)
-    if type == "damage" then
-        tbl.damage = args[1] or 0
-    end
-    tbl.health = ply:Health()
-    net.Start("n_health_networking")
-        net.WriteTable(tbl)
-    net.Send(ply)
+    local updateData = table.Copy(ply.n_health)
 
+    // copying over the table cuz we dont want the health to be there
+    if type == "damage" then
+        updateData.damage = args[1] or 0
+    end
+    updateData.health = ply:Health()
+    buffer[ply] = {
+        data = updateData,
+        time = (buffer[ply] and buffer[ply].time or CurTime()+0.075),
+    }
 end
+
+timer.Create("n_health_UpdateClientBuffer",0.01,0,function()
+    for k,v in pairs(buffer) do
+        if v.time < CurTime() then
+            if IsValid(k) then  // if player leaves server
+                net.Start("n_health_networking")
+                    net.WriteTable(v.data)
+                net.Send(k)
+            end
+            buffer[k] = nil
+        end
+    end
+end)
+
+
 
 // realistic fall damage, can be disabled in config
 hook.Add( "GetFallDamage", "n_health_realisticfalldamage", function( ply, speed )
@@ -85,6 +102,8 @@ function n_health:HandleDamage(target,dmg,hitgroup)
         // hit head, get the weapon type - blunt, sharp, bullet(if bullet then get the damage that it inflicted,
         // to calculate the possibilty of bleeding, fracture or concussion)
         elseif hitgroup == HITGROUP_HEAD then
+
+        elseif hitgroup == HITGROUP_CHEST then
             
         end
     end

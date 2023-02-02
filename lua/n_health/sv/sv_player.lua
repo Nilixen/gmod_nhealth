@@ -3,8 +3,12 @@ local entityMeta = FindMetaTable("Entity")
 
 local oldSetHealth = oldSetHealth or entityMeta.SetHealth
 function entityMeta:SetHealth(health,bool)
-    if not bool and self:IsPlayer() then
-        n_health:SetPlayerHealth(self,health)
+    if self:IsPlayer() then
+        if not bool then
+            n_health:SetPlayerHealth(self,health)
+        else
+            n_health:UpdateClient(self,"health")
+        end
     end
     oldSetHealth(self,health)
 end
@@ -99,7 +103,6 @@ function playerMeta:Damage(damage,limb)
         local _limb = self.n_health[limb]
         local dmg = _limb.health - damage
         _limb.health = math.max(dmg,0)
-    
         // if damage is more than a body part can withstand it will split the rest of the damage to the whole body
         if dmg < 0 then
             dmg = math.abs(dmg)
@@ -107,6 +110,7 @@ function playerMeta:Damage(damage,limb)
         end
     // if limb is not passed split the damage to all viable body parts that have more than x health
     else
+
         // i know that some damage will be lost, but i have to do it this way or it will crash gmod XD
         local avaibleLimbs = table.Copy(n_health.limbs) // copy the table to be able to work on it without messing every other thing up
 
@@ -135,13 +139,21 @@ end
 // Player:Health(detailed)
 // this will return a health based on health of limbs(usefull for huds or any other things), detailed will return 
 // whole health tab to further investigate
+local lastTimeCached = {}
 function playerMeta:Health(detailed)
 
     // check if it is actually player(have to be) and if alive
     if not self:IsPlayer() then return end
     if not self:Alive() then return 0 end
-    
+
     if not detailed then
+
+        // if cached exists then return that to prevent excesive calcuations
+        lastTimeCached[self] = lastTimeCached[self] and lastTimeCached[self] or 0
+
+        if (self.n_health.cachedHealth and lastTimeCached[self] >= CurTime()) then
+            return self.n_health.cachedHealth
+        end
         //  return overall percentage of health based on total limbs health
         local limbs = n_health.limbs
         local maxLimbsHealth = 0
@@ -158,8 +170,10 @@ function playerMeta:Health(detailed)
             local _limb = self.n_health[v]
             currentLimbsHealth = currentLimbsHealth + _limb.health
         end
-
-        return (currentLimbsHealth/maxLimbsHealth*100)
+        local newHealth = (currentLimbsHealth/maxLimbsHealth*100)
+        self.n_health.cachedHealth = newHealth
+        lastTimeCached[self] = CurTime()+0.015
+        return newHealth
     else
         // return all in a table
         return self.n_health

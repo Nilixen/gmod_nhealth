@@ -10,10 +10,11 @@ hook.Add( "HUDPaintBackground", "n_healthHUD", function()
     if n_health and LocalPlayer().n_health then
         for k,v in pairs(n_health.limbs) do
             local mat = Material("nhealth/"..v..".png")
-            local color = HSVToColor(120*-(LocalPlayer().n_health[v].health/n_health.config.limbs.multipliers[v]*100),0.8,0.3)
+            local color = HSVToColor((LocalPlayer().n_health[v].health/n_health.config.limbs.multipliers[v]),0.8,0.5)
             surface.SetMaterial(mat)
             surface.SetDrawColor(color)
             surface.DrawTexturedRect(x,y,w,h)
         end
     end
+
 end )
