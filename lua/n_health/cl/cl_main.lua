@@ -1,3 +1,13 @@
+// font creation
+function n_health:CreateFont(name, size, weight)
+    surface.CreateFont("n_health."..name,{
+        font = n_health.config.font,
+        size = size or 16,
+        weight = weight or 500,
+    })
+
+end
+
 
 // setup and load client config if exists, if not then create one
 local dir = n_health.config.directory
@@ -13,6 +23,12 @@ else
     end
     n_health.cl_config = newConfig
 end
+
+function n_health:SaveClientConfig()
+
+
+end
+
 
 
 hook.Add( "InitPostEntity", "n_health_clientready", function()

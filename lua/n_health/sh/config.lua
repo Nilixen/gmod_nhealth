@@ -31,3 +31,5 @@ c.damageTypeScale = {
 c.clientUpdate = 4
 
 c.serverLanguage = "EN-en"
+// font used by gui's
+c.font = "Tahoma"

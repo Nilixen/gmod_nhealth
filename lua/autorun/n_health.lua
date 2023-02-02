@@ -32,3 +32,10 @@ else
     include("n_health/cl/cl_gui.lua")
 
 end
+
+// language
+for _, v in pairs(file.Find("n_health/lang/*", "LUA")) do
+	include("n_health/lang/" .. v)
+	if SERVER then AddCSLuaFile("n_health/lang/" .. v) end
+end
+
