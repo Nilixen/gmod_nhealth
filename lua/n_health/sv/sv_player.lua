@@ -1,7 +1,6 @@
 local entityMeta = FindMetaTable("Entity")
 
-// function to catch the default Entity:SetHealth() and if the entity is a player then execute my custom function
-// bool is passed to prevent Player:Damage() function from setting every limb health
+
 local oldSetHealth = oldSetHealth or entityMeta.SetHealth
 function entityMeta:SetHealth(health,bool)
     if not bool and self:IsPlayer() then
@@ -11,14 +10,14 @@ function entityMeta:SetHealth(health,bool)
 end
 
 
-// n_health:SetHealth(player,health,limb) sets health depending on passed arguments to every limb or to passed one
+// n_health:SetHealth()
 function n_health:SetPlayerHealth(target,health,limb)
     // check if it is actually player(have to be) and if alive
     if not target:IsPlayer() then return end
     if not target:Alive() then return end
     
     local limbs = n_health.limbs
-    if IsValid(limb) and table.HasValue(n_health.limbs,limb) then
+    if IsValid(limb) then
         
         if table.HasValue(limbs,limb) then
             local _limb = target.n_health[limb]
@@ -46,7 +45,7 @@ function playerMeta:Heal(limb)
 
     // if you're trying to heal selected limb and if it exists then go ahead
     local limbs = n_health.limbs
-    if IsValid(limb) and table.HasValue(n_health.limbs,limb) then
+    if IsValid(limb) then
         if table.HasValue(limbs,limb) then
             local _limb = self.n_health[limb]
             _limb.bleeding = false
@@ -75,7 +74,7 @@ function playerMeta:SetHealthMultiplier(multiplier, limb)
 
     // if only one limb is specified go through that
 
-    if IsValid(limb) and table.HasValue(n_health.limbs,limb) then
+    if IsValid(limb) then
         local _limb = self.n_health[limb]
         _limb.multiplier = n_health.config.limbs.multipliers[limb] * multiplier
     else
@@ -96,7 +95,7 @@ function playerMeta:Damage(damage,limb)
     if not damage then return false end
 
     // if limb is passed with a function
-    if IsValid(limb) and table.HasValue(n_health.limbs,limb) then
+    if limb then 
         local _limb = self.n_health[limb]
         local dmg = _limb.health - damage
         _limb.health = math.max(dmg,0)

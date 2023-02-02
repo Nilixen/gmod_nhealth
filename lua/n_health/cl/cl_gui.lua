@@ -1,11 +1,10 @@
-// Draw body parts on hud TODO: Hide them when not taken damage(bleeding also counts) in 5 seconds
+// Draw health
 
 local x,y = 30,10
 local scale = 0.40
 local w,h = 183,532
 w = w * scale
 h = h * scale
-
 
 hook.Add( "HUDPaintBackground", "n_healthHUD", function()
     if n_health and LocalPlayer().n_health then
