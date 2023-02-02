@@ -55,7 +55,7 @@ hook.Add("EntityTakeDamage","n_health",function(target, dmg)
 end)
 
 function n_health:HandleDamage(target,dmg,hitgroup)
-    // just to be sure that we're dealing with player
+    // just to be sure that we're dealing with player or npc (bot)
     if not target:IsPlayer() then return end
 
     // scaling damage with respect to config file
