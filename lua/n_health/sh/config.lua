@@ -13,6 +13,10 @@ c.limbs = {
     },
 }
 
+// sets the directory name for client settings and others
+c.directory = "n_health"
+
+
 // this enables realistic fall damage (damage = (speed/8))
 // you can disable this if you're using custom one
 n_health.config.realisticfalldamage = true
@@ -23,4 +27,7 @@ c.damageTypeScale = {
     [DMG_FALL] = 1,
 }
 
-c.clientUpdate = 4  // TODO
+// after how many ticks will the buffer for syncing data with clientside trigger
+c.clientUpdate = 4
+
+c.serverLanguage = "EN-en"

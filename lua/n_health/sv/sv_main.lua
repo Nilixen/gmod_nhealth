@@ -23,7 +23,7 @@ function n_health:UpdateClient(ply,type,...)
     updateData.health = ply:Health()
     buffer[ply] = {
         data = updateData,
-        time = (buffer[ply] and buffer[ply].time or CurTime()+0.075),
+        time = (buffer[ply] and buffer[ply].time or CurTime()+(0.015*n_health.config.clientUpdate)),
     }
 end
 

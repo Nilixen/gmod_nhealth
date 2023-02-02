@@ -12,7 +12,9 @@ if SERVER or game.SinglePlayer() then
     AddCSLuaFile("n_health/sh/config.lua")
 
     // client
+    AddCSLuaFile("n_health/cl/cl_defaultconfig.lua")
     AddCSLuaFile("n_health/cl/cl_main.lua")
+    AddCSLuaFile("n_health/cl/cl_guipanels.lua")
     AddCSLuaFile("n_health/cl/cl_gui.lua")
 
     // server
@@ -24,7 +26,9 @@ else
     print("Loading n_health...")
     include("n_health/sh/config.lua")
     include("n_health/sh/sh_main.lua")
+    include("n_health/cl/cl_defaultconfig.lua")
     include("n_health/cl/cl_main.lua")
+    include("n_health/cl/cl_guipanels.lua")
     include("n_health/cl/cl_gui.lua")
 
 end
