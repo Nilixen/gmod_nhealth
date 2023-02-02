@@ -18,8 +18,8 @@ function n_health:SetPlayerHealth(target,health,limb)
     if not target:Alive() then return end
     
     local limbs = n_health.limbs
-    if IsValid(limb) and table.HasValue(n_health.limbs,limb) then
-        
+    
+    if IsValid(limb) then
         if table.HasValue(limbs,limb) then
             local _limb = target.n_health[limb]
             _limb.health = health * (_limb.multiplier or n_health.config.limbs.multipliers[limb])
@@ -46,7 +46,7 @@ function playerMeta:Heal(limb)
 
     // if you're trying to heal selected limb and if it exists then go ahead
     local limbs = n_health.limbs
-    if IsValid(limb) and table.HasValue(n_health.limbs,limb) then
+    if IsValid(limb) then
         if table.HasValue(limbs,limb) then
             local _limb = self.n_health[limb]
             _limb.bleeding = false
