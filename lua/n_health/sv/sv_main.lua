@@ -85,7 +85,6 @@ function n_health:HandleDamage(target,dmg,hitgroup)
     end
     
 
-    // if hitgroup is passed then we know that we're dealing with ScalePlayerDamage, and that it's a bullet damage
     if hitgroup then
         // if the hitgroup is generic then we might be dealing with npc dmg eg. combine soldier
         if hitgroup == HITGROUP_GENERIC then
@@ -102,9 +101,13 @@ function n_health:HandleDamage(target,dmg,hitgroup)
         // hit head, get the weapon type - blunt, sharp, bullet(if bullet then get the damage that it inflicted,
         // to calculate the possibilty of bleeding, fracture or concussion)
         elseif hitgroup == HITGROUP_HEAD then
-
+            target:Damage(dmg:GetDamage(),"head")
         elseif hitgroup == HITGROUP_CHEST then
-            
+            target:Damage(dmg:GetDamage(),"chest")
+        elseif hitgroup == HITGROUP_STOMACH then
+            target:Damage(dmg:GetDamage(),"stomach")
+        elseif hitgroup == HITGROUP_LEFTARM or hitgroup == HITGROUP_RIGHTARM then
+            target:Damage(dmg:GetDamage(),)
         end
     end
 

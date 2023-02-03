@@ -28,8 +28,7 @@ end )
 n_health.cl_config.gui = n_health.cl_config.gui or {}
 
 function n_health:OpenClientGUI()
-
-
+    // if the frame already exists then remove it to prevent multiple instances of frame (also useful for debugging)
     if IsValid(n_health.cl_config.gui.frame) then n_health.cl_config.gui.frame:Remove() end
 	
     n_health.cl_config.gui.frame = vgui.Create("n_health.frame")
@@ -38,6 +37,12 @@ function n_health:OpenClientGUI()
     frame:Center()
     frame:MakePopup()
     frame:SetTitle(n_health:GetPhrase("guiFrame"))
+
+    n_health.cl_config.gui.configPanel = vgui.Create("n_health.configPanel",frame)
+    local configPanel = n_health.cl_config.gui.configPanel
+    configPanel:Dock(FILL)
+    
+  
 
     // TODO continue
 

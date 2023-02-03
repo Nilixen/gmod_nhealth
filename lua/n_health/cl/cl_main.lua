@@ -26,6 +26,8 @@ end
 
 function n_health:SaveClientConfig()
 
+    file.Write(dir.."/cl_config.txt",util.TableToJSON(n_health.cl_config))
+    print("saved config")
 
 end
 
