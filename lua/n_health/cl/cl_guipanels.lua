@@ -1,6 +1,7 @@
 local guiColors = {
+	accentColor = Color(0,200,120),
     boxes = {
-        blended = Color(0,0,0,70),
+        blended = Color(0,0,0,125),
         primary = Color(53,55,55),
 		secondary = Color(43,43,43),
 		tertiary = Color(33,33,33),
@@ -15,6 +16,98 @@ local guiColors = {
 
     },
 }
+//textEntryWithLabel																--------------NOT USED--------------
+local TEXTENTRY = {}
+function TEXTENTRY:Init()
+	self.label = self:Add("DLabel")
+	local label = self.label
+	label:Dock(TOP)
+	label:SetFont("n_health.15")
+	
+	self.textEntry = self:Add("DTextEntry")
+	local textEntry = self.textEntry
+	textEntry:Dock(FILL)
+	textEntry:DockMargin(0,4,0,0)
+	textEntry:SetDrawBorder( false )
+	textEntry:SetPaintBackground( false )
+	textEntry:SetFont("n_health.20")
+	textEntry:SetTextColor(guiColors.text.secondary)
+	textEntry.PaintOver = function(s,w,h)
+		draw.RoundedBox(6,0,0,w,h,guiColors.boxes.blended)
+	end
+end
+function TEXTENTRY:Paint(w,h)
+
+end
+function TEXTENTRY:PerformLayout(w,h)
+	self.label:SizeToContentsY(4)
+end
+vgui.Register("n_health.textEntry",TEXTENTRY,"DPanel")
+
+
+
+local SLIDER = {}
+
+function SLIDER:Init()
+	self.percentage = false
+
+	self.Paint = function(s,w,h) end
+
+	self.Scratch:SetVisible( false )
+	self.Label:SetVisible( false )
+	self:SetDecimals( 0 )
+	local textArea = self.TextArea
+	textArea:Dock(LEFT)
+	textArea:DockMargin(0,0,4,0)
+	textArea:SetFont("n_health.20")
+	textArea:SetTextColor(JNVoiceMod.clgui.text.primary)
+	textArea.PaintOver = function(s,w,h)
+		
+
+		if self.percentage then
+			surface.SetFont(s:GetFont())
+			local x,_ = surface.GetTextSize(tostring(math.Round(self:GetValue())))
+			draw.SimpleText("%",s:GetFont(),4+x,h*.5,s:GetTextColor(),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+		end
+		draw.RoundedBox(6,0,0,w,h,guiColors.boxes.blended)
+	end
+	local slider = self.Slider
+	slider.PaintOver = function(s,w,h)
+		draw.RoundedBox(6,0,0,w,h,guiColors.boxes.blended)
+	end
+	slider.Knob.Paint = function(s,w,h)
+		draw.RoundedBox(6,0,0,w*.5,h,guiColors.accentColor)
+	end
+end
+
+function SLIDER:PerformLayout()
+
+	local decimals = self:GetDecimals()
+	local str = (decimals > 0 and "." or "")
+	str = str .. (self.percentage and "%" or "")
+	for i = 1, decimals do 
+		str = str.."0"
+	end
+	surface.SetFont("n_health.20")
+	local x,_ = surface.GetTextSize(tostring(self:GetMax())..str)
+	self.TextArea:SetWide(x+8)
+
+end
+
+function SLIDER:Percentage(bool)
+	self.percentage = bool
+	if bool then
+		self:SetMinMax(0,100)
+		self:InvalidateLayout()
+	end
+end
+
+
+vgui.Register("n_health.slider",SLIDER,"DNumSlider")
+
+
+
+
 
 // configlabel
 local CONFIGLABEL = {}
@@ -208,12 +301,20 @@ function CONFIGPANEL:Init()
 	self.hudSettingsSectionLabel = self:Add("n_health.sectionLabel")
 	self.hudSettingsSectionLabel:SetText(n_health:GetPhrase("hudsettings"))
 
-
+	self.idleAlphaHUD = self:Add("n_health.slider")
+	local idleAlphaHUD = self.idleAlphaHUD
+	idleAlphaHUD:Dock(TOP)
+	idleAlphaHUD:DockMargin(8,0,8,0)
+	idleAlphaHUD:Percentage(true)
+	idleAlphaHUD:SetValue(n_health.cl_config.idleAlphaHUD)
+	idleAlphaHUD:SetDefaultValue(n_health.cl_config.idleAlphaHUD)
 
 end
 function CONFIGPANEL:Paint(w,h)
 	draw.RoundedBoxEx(6,0,0,w,h,guiColors.boxes.secondary,false,false,true,true)
 end
+function CONFIGPANEL:PerformLayout(w,h)
 
+end
 
 vgui.Register("n_health.configPanel",CONFIGPANEL,"EditablePanel")

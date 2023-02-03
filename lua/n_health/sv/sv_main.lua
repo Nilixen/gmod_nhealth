@@ -65,16 +65,16 @@ end)
 hook.Add("EntityTakeDamage","n_health",function(target, dmg)
     // have to check if it's a player or a npc, cuz' entitytakedamage will also trigger for every entity
     if not target:IsPlayer() then return end
+    if target:HasGodMode() then return end
 
-    n_health:HandleDamage(target,dmg,target:LastHitGroup())
+    return n_health:HandleDamage(target,dmg,target:LastHitGroup())
     // return true to prevent from taking damage
-    return true
 end)
 
 function n_health:HandleDamage(target,dmg,hitgroup)
     // just to be sure that we're dealing with player or npc (bot)
     if not target:IsPlayer() then return end
-
+    local bool = true
     // scaling damage with respect to config file
     for k,v in pairs(n_health.config.damageTypeScale) do
         if bit.band(dmg:GetDamageType(),k) then
@@ -107,8 +107,26 @@ function n_health:HandleDamage(target,dmg,hitgroup)
         elseif hitgroup == HITGROUP_STOMACH then
             target:Damage(dmg:GetDamage(),"stomach")
         elseif hitgroup == HITGROUP_LEFTARM or hitgroup == HITGROUP_RIGHTARM then
-            target:Damage(dmg:GetDamage())
+            local limb = (hitgroup == HITGROUP_LEFTARM and "leftarm" or "rightarm")
+            target:Damage(dmg:GetDamage(),limb)
+        elseif hitgroup == HITGROUP_LEFTLEG or hitgroup == HITGROUP_RIGHTLEG then
+            local limb = (hitgroup == HITGROUP_LEFTLEG and "leftleg" or "rightleg")
+            target:Damage(dmg:GetDamage(),limb)
         end
     end
+
+    PrintTable(target.n_health)
+    // check for damage of head and chest and if one of them is 0 then kill player
+    local limbs = {"head","chest"}
+    for k,v in pairs(limbs) do
+        if target.n_health[v].health <= 0 then
+            target:SetHealth(0)
+            bool = false
+        end
+    end
+
+    // set targets LastHitGroup to generic to fix some things eg. damage that should be dealt globally is dealt to last hit body part
+    target:SetLastHitGroup(HITGROUP_GENERIC)
+    return bool
 
 end
