@@ -3,5 +3,7 @@ n_health.lang["EN-en"] = {
     ["lang"] = "Language",
     ["close"] = "Close",
     ["save"] = "Save",
-    ["guiFrame"] = "N's Improved Health System"
+    ["guiFrame"] = "N's Improved Health System",
+    ["generalsettings"] = "General Settings",
+    ["hudsettings"] = "HUD Settings",
 }

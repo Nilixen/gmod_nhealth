@@ -20,15 +20,29 @@ local guiColors = {
 local CONFIGLABEL = {}
 function CONFIGLABEL:Init()
 	self:Dock(TOP)
-	self:DockMargin(8,8,8,4)
+	self:DockMargin(8,0,8,4)
 	self:SetFont("n_health.20")
 	self:SetTextColor(guiColors.text.secondary)
 end
-function CONFIGLABEL:Paint(w,h)
+vgui.Register("n_health.configLabel",CONFIGLABEL,"DLabel")
 
+// sectionlabel
+n_health:CreateFont("25Heavy",25,500)
+
+local SECTIONLABEL = {}
+function SECTIONLABEL:Init()
+	self:Dock(TOP)
+	self:SetContentAlignment(5)
+	self:DockMargin(8,8,8,0)
+	self:SetFont("n_health.25Heavy")
+	self:SetTextColor(guiColors.text.secondary)
 end
 
-vgui.Register("n_health.configLabel",CONFIGLABEL,"DLabel")
+function SECTIONLABEL:PerformLayout(w,h)
+	self:SizeToContentsY(4)
+end
+
+vgui.Register("n_health.sectionLabel",SECTIONLABEL,"DLabel")
 // combobox
 local COMBOBOX = {}
 n_health:CreateFont("15",15)
@@ -172,9 +186,11 @@ function CONFIGPANEL:Init()
 		n_health.cl_config.gui.frame:Remove()	
 	end
 
+	self.generalSettingsSectionLabel = self:Add("n_health.sectionLabel")
+	self.generalSettingsSectionLabel:SetText(n_health:GetPhrase("generalsettings"))
+
 	self.langLabel = self:Add("n_health.configLabel")
-	local langLabel = self.langLabel
-	langLabel:SetText(n_health:GetPhrase("lang"))
+	self.langLabel:SetText(n_health:GetPhrase("lang"))
 
 	self.langComboBox = self:Add("n_health.comboBox")
 	local langComboBox = self.langComboBox
@@ -188,6 +204,10 @@ function CONFIGPANEL:Init()
 		if n_health.cl_config.selectedLanguage == k then langComboBox:ChooseOptionID(i) end
 		i = i + 1
 	end
+
+	self.hudSettingsSectionLabel = self:Add("n_health.sectionLabel")
+	self.hudSettingsSectionLabel:SetText(n_health:GetPhrase("hudsettings"))
+
 
 
 end

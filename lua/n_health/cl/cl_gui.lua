@@ -33,7 +33,7 @@ function n_health:OpenClientGUI()
 	
     n_health.cl_config.gui.frame = vgui.Create("n_health.frame")
     local frame = n_health.cl_config.gui.frame
-    frame:SetSize(600,800)
+    frame:SetSize(600,300)
     frame:Center()
     frame:MakePopup()
     frame:SetTitle(n_health:GetPhrase("guiFrame"))

@@ -107,7 +107,7 @@ function n_health:HandleDamage(target,dmg,hitgroup)
         elseif hitgroup == HITGROUP_STOMACH then
             target:Damage(dmg:GetDamage(),"stomach")
         elseif hitgroup == HITGROUP_LEFTARM or hitgroup == HITGROUP_RIGHTARM then
-            target:Damage(dmg:GetDamage(),)
+            target:Damage(dmg:GetDamage())
         end
     end
 
