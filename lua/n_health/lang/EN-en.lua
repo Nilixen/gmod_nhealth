@@ -6,5 +6,7 @@ n_health.lang["EN-en"] = {
     ["guiFrame"] = "N's Improved Health System",
     ["generalsettings"] = "General Settings",
     ["hudsettings"] = "HUD Settings",
-    ["idlehudalpha"] = "Idle alpha (0-255)",
+    ["idlehudalpha"] = "Idle alpha",
+    ["drawhudalpha"] = "Draw alpha",
+    ["drawtimehud"] = "Draw time",
 }

@@ -1,5 +1,6 @@
 // font creation
 function n_health:CreateFont(name, size, weight)
+    print("n_health."..name.." - size:"..size)
     surface.CreateFont("n_health."..name,{
         font = n_health.config.font,
         size = size or 16,
@@ -42,7 +43,7 @@ end )
 // concommand for opening the gui
 concommand.Add("n_health_gui",function()
 
-    n_health:OpenClientGUI()
+    n_health:OpenClientGUI() 
 
 end)
 
@@ -53,6 +54,6 @@ net.Receive("n_health_networking",function()
     if not IsValid(LocalPlayer()) then return end
     local tbl = net.ReadTable()
     LocalPlayer().n_health = tbl
-    LocalPlayer().n_health.drawTime = CurTime() + n_health.cl_config.clientHUDDrawTime
+    LocalPlayer().n_health.drawTime = CurTime() + n_health.cl_config.HUDDrawTime
 
 end)

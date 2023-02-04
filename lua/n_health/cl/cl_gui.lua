@@ -13,7 +13,7 @@ hook.Add( "HUDPaintBackground", "n_healthHUD", function()
         for k,v in pairs(n_health.limbs) do
             local mat = Material("nhealth/"..v..".png")
             local color = HSVToColor((LocalPlayer().n_health[v].health/n_health.config.limbs.multipliers[v]),0.8,0.5)
-            color.a = lerp*230
+            color.a = lerp*(n_health.cl_config.drawAlphaHUD-n_health.cl_config.idleAlphaHUD)+n_health.cl_config.idleAlphaHUD
             surface.SetMaterial(mat)
             surface.SetDrawColor(color)
             surface.DrawTexturedRect(x,y,w,h)
@@ -33,7 +33,7 @@ function n_health:OpenClientGUI()
 	
     n_health.cl_config.gui.frame = vgui.Create("n_health.frame")
     local frame = n_health.cl_config.gui.frame
-    frame:SetSize(600,300)
+    frame:SetSize(600,350)
     frame:Center()
     frame:MakePopup()
     frame:SetTitle(n_health:GetPhrase("guiFrame"))

@@ -97,7 +97,7 @@ end
 // this will damage selected limb
 function playerMeta:Damage(damage,limb)
     if not damage then return false end
-
+    
     // if limb is passed with a function
     if limb then 
         local _limb = self.n_health[limb]

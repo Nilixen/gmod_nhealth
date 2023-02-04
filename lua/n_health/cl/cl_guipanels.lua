@@ -1,7 +1,7 @@
 local guiColors = {
-	accentColor = Color(0,200,120),
+	accentColor = Color(0,133,80),
     boxes = {
-        blended = Color(0,0,0,125),
+        blended = Color(0,0,0,120),
         primary = Color(53,55,55),
 		secondary = Color(43,43,43),
 		tertiary = Color(33,33,33),
@@ -12,8 +12,7 @@ local guiColors = {
     text = {
         primary = Color(201,201,201),
         secondary = Color(144,144,144),
-		hovered = Color(100,100,100),
-
+		blended = Color(0,0,0,200),
     },
 }
 //textEntryWithLabel																--------------NOT USED--------------
@@ -145,7 +144,7 @@ function COMBOBOX:Init()
 	self.Paint = function(s,w,h)
 		local bool = not s:IsMenuOpen()
 		draw.RoundedBoxEx(6,0,0,w,h,guiColors.boxes.tertiary,true,true,bool,bool)
-		s:SetTextColor(s:IsHovered() and guiColors.text.primary or guiColors.text.hovered)
+		s:SetTextColor(s:IsHovered() and guiColors.text.primary or guiColors.text.secondary)
 	end
 	local once = true
 	self.Think = function(s)
@@ -159,7 +158,7 @@ function COMBOBOX:Init()
 				child:SetFont("n_health.15")
 				child:SetTextColor(JNVoiceMod.clgui.text.primary)
 				child.Paint = function(s,w,h)
-					s:SetTextColor(s:IsHovered() and guiColors.text.primary or guiColors.text.hovered)
+					s:SetTextColor(s:IsHovered() and guiColors.text.primary or guiColors.text.secondary)
 					draw.RoundedBoxEx((i == count and 6 or 0),0,0,w,h,guiColors.boxes.tertiary,false,false,true,true)
 				end
 			end
@@ -243,6 +242,9 @@ function FRAME:Init()
 	label:SetTextColor(guiColors.text.primary)
 
 end
+function FRAME:PaintOver(w,h)
+	draw.SimpleText(n_health.config.version,"n_health.15",w-8,h-4,guiColors.text.blended,TEXT_ALIGN_RIGHT,TEXT_ALIGN_BOTTOM)
+end
 function FRAME:PerformLayout(w,h)
 
 	self.header:SetTall(28)
@@ -262,6 +264,7 @@ function FRAME:SetTitle(title)
 	self:InvalidateLayout()
 end
 
+
 vgui.Register("n_health.frame",FRAME,"EditablePanel")
 
 
@@ -274,6 +277,10 @@ function CONFIGPANEL:Init()
 
 		local _,newSelectedLanguage = self.langComboBox:GetSelected()
 		cl_config.selectedLanguage = newSelectedLanguage
+		cl_config.HUDDrawTime = self.drawTimeHUD:GetValue()
+		cl_config.idleAlphaHUD = self.idleAlphaHUD:GetValue()
+		cl_config.drawAlphaHUD = self.drawAlphaHUD:GetValue()
+		
 		n_health:SaveClientConfig()
 		// close the menu
 		n_health.cl_config.gui.frame:Remove()	
@@ -301,20 +308,46 @@ function CONFIGPANEL:Init()
 	self.hudSettingsSectionLabel = self:Add("n_health.sectionLabel")
 	self.hudSettingsSectionLabel:SetText(n_health:GetPhrase("hudsettings"))
 
+	// idle alpha
+	self.idleAlphaLabel = self:Add("n_health.configLabel")
+	self.idleAlphaLabel:SetText(n_health:GetPhrase("idlehudalpha"))
+
 	self.idleAlphaHUD = self:Add("n_health.slider")
 	local idleAlphaHUD = self.idleAlphaHUD
 	idleAlphaHUD:Dock(TOP)
 	idleAlphaHUD:DockMargin(8,0,8,0)
-	idleAlphaHUD:Percentage(true)
+	idleAlphaHUD:SetMinMax(0,255)
 	idleAlphaHUD:SetValue(n_health.cl_config.idleAlphaHUD)
 	idleAlphaHUD:SetDefaultValue(n_health.cl_config.idleAlphaHUD)
+
+	// update alpha
+	self.drawAlphaLabel = self:Add("n_health.configLabel")
+	self.drawAlphaLabel:SetText(n_health:GetPhrase("drawhudalpha"))
+
+	self.drawAlphaHUD = self:Add("n_health.slider")
+	local drawAlphaHUD = self.drawAlphaHUD
+	drawAlphaHUD:Dock(TOP)
+	drawAlphaHUD:DockMargin(8,0,8,0)
+	drawAlphaHUD:SetMinMax(0,255)
+	drawAlphaHUD:SetValue(n_health.cl_config.drawAlphaHUD)
+	drawAlphaHUD:SetDefaultValue(n_health.cl_config.drawAlphaHUD)
+
+
+	// draw time
+	self.drawTimeLabel = self:Add("n_health.configLabel")
+	self.drawTimeLabel:SetText(n_health:GetPhrase("drawtimehud"))
+
+	self.drawTimeHUD = self:Add("n_health.slider")
+	local drawTimeHUD = self.drawTimeHUD
+	drawTimeHUD:Dock(TOP)
+	drawTimeHUD:DockMargin(8,0,8,0)
+	drawTimeHUD:SetMinMax(0,10)
+	drawTimeHUD:SetValue(n_health.cl_config.HUDDrawTime)
+	drawTimeHUD:SetDefaultValue(n_health.cl_config.HUDDrawTime)
 
 end
 function CONFIGPANEL:Paint(w,h)
 	draw.RoundedBoxEx(6,0,0,w,h,guiColors.boxes.secondary,false,false,true,true)
-end
-function CONFIGPANEL:PerformLayout(w,h)
-
 end
 
 vgui.Register("n_health.configPanel",CONFIGPANEL,"EditablePanel")
